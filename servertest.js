@@ -1,11 +1,7 @@
 const express = require('express')
 const app = express()
-const fs   = require('fs')
 require('dotenv').config()
 const Contact = require('./models/contact')
-
-var contact_html = fs.readFileSync("perfect-learn/contact.html")
-var index_html = fs.readFileSync("perfect-learn/index.html")
 
 function fixnames (x){
   return{
@@ -20,7 +16,7 @@ app.get('/index.html', (req,res)=>{
   if (bool){
     res.setHeader("Content-Type", "text/html")
     res.writeHead(200)
-    res.end(index_html)
+    res.sendFile(path.join('perfect-learn','index.html'))
   }
   else{
     console.log('query=',req.query)
@@ -29,7 +25,7 @@ app.get('/index.html', (req,res)=>{
       res.status(200).send(`<h3>Thank you for your interest<br>
         You entered:<br>
         ${JSON.stringify(x)}<br>
-        We will contact you shortly.`)
+        We will contact you shortly.</h3>`)
     })
   }
 })
@@ -38,7 +34,7 @@ app.get('/contact.html', (req,res)=>{
   if (bool){
     res.setHeader("Content-Type", "text/html")
     res.writeHead(200)
-    res.end(contact_html)
+    res.sendFile(path.join('perfect-learn','contact.html'))
   }
   else{
     console.log('query=',req.query)
@@ -48,7 +44,7 @@ app.get('/contact.html', (req,res)=>{
       res.status(200).send(`<h3>Thank you for your interest<br>
         You entered:<br>
         ${JSON.stringify(x)}<br>
-        We will contact you shortly.`)
+        We will contact you shortly.</h3>`)
     })
   }
 })
