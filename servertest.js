@@ -12,7 +12,7 @@ function fixnames (x){
 }
 
 app.get('/index.html', (req,res)=>{
-  var bool = Object.keys(req.query).length === 0
+  var bool = req.hasOwnProperty('query')
   if (bool){
     res.setHeader("Content-Type", "text/html")
     res.writeHead(200)
