@@ -1,5 +1,9 @@
 const express = require('express')
+const fs      = require('fs')
+const path    = require('path')
 const app = express()
+const morgan = require('morgan')
+app.use(morgan('tiny'))
 require('dotenv').config()
 const Contact = require('./models/contact')
 
@@ -11,30 +15,18 @@ function fixnames (x){
   }
 }
 
-app.get('/index.html', (req,res)=>{
-  var bool = req.hasOwnProperty('query')
-  if (bool){
-    res.setHeader("Content-Type", "text/html")
-    res.writeHead(200)
-    res.sendFile(path.join('perfect-learn','index.html'))
+function appendtoleadlog (content){
+  try {
+    fs.writeFileSync('perfect-learn/leadlog.txt', content+',\n', {flag: 'a+'})
+    console.log('appendlead() written. content=',content)
+  } catch (err) {
+    console.error(err)
   }
-  else{
-    console.log('query=',req.query)
-    const dbobj = new Contact(fixnames(req.query))
-    dbobj.save().then(x => {
-      res.status(200).send(`<h3>Thank you for your interest<br>
-        You entered:<br>
-        ${JSON.stringify(x)}<br>
-        We will contact you shortly.</h3>`)
-    })
-  }
-})
+}
 app.get('/contact.html', (req,res)=>{
   var bool = Object.keys(req.query).length === 0
   if (bool){
-    res.setHeader("Content-Type", "text/html")
-    res.writeHead(200)
-    res.sendFile(path.join('perfect-learn','contact.html'))
+    res.sendFile(path.join(__dirname,'perfect-learn','contact.html'))
   }
   else{
     console.log('query=',req.query)
@@ -42,9 +34,9 @@ app.get('/contact.html', (req,res)=>{
     dbobj.save().then(x => {
       console.log(x)
       res.status(200).send(`<h3>Thank you for your interest<br>
-        You entered:<br>
-        ${JSON.stringify(x)}<br>
+        You entered:<br><pre>${JSON.stringify(x,null,2)}</pre>
         We will contact you shortly.</h3>`)
+        appendtoleadlog(JSON.stringify(fixnames(req.query),null,2))
     })
   }
 })
